@@ -55,6 +55,16 @@ namespace nPhysics
 		rotationOut = glm::eulerAngles(mRotation);
 	}
 
+	void cRigidBody::GetRotation( glm::quat& rotationOut )
+	{
+		rotationOut = mRotation;
+	}
+
+	void cRigidBody::SetRotation( glm::quat rotationIn )
+	{
+		mRotation = rotationIn;
+	}
+
 	void cRigidBody::SetTransform( glm::mat4 transformIn )
 	{
 		/*transformOut = glm::mat4_cast( mRotation );

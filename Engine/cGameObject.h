@@ -26,6 +26,7 @@ public:
 	~cGameObject();		// destructor
 
 	nPhysics::iRigidBody* rigidBody;
+	nPhysics::iRigidBody* btRigidBody;
 
 	//glm::vec3 position;
 	//glm::vec3 prevPosition;

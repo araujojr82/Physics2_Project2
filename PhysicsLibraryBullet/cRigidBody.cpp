@@ -21,8 +21,9 @@ namespace nPhysics
 		{
 			float pConst;
 			shape->GetPlaneConst( pConst );
+			pConst = glm::normalize( pConst );
 			glm::vec3 planeNormal;
-			shape->GetPlaneNormal( planeNormal );			
+			shape->GetPlaneNormal( planeNormal );					
 			btVector3 pNormal = btVector3( planeNormal.x * -1, planeNormal.y * -1, planeNormal.z * -1 );			
 			btVector3 position = btVector3( desc.Position.x, desc.Position.y, desc.Position.z );
 			
@@ -137,7 +138,7 @@ namespace nPhysics
 		rotationOut.w = quatRotation.getW();
 	}
 
-	void cRigidBody::SetRotation( glm::quat rotationOut )
+	void cRigidBody::SetRotation( glm::quat rotationIn )
 	{
 
 	}

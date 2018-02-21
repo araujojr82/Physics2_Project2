@@ -57,6 +57,9 @@ f_CreateFactory CreateFactory = NULL;
 nPhysics::iPhysicsWorld* g_pThePhysicsWorld;
 nPhysics::iPhysicsFactory* g_pThePhysicsFactory;
 
+nPhysics::iPhysicsWorld* g_pBulletPhysicsWorld;
+nPhysics::iPhysicsFactory* g_pBulletPhysicsFactory;
+
 std::string libraryFile = "PhysicsLibrary.dll";
 std::string bulletLibraryFile = "PhysicsLibraryBullet.dll";
 
@@ -193,8 +196,7 @@ int main( void )
 {
 	//------------------------------------------------------------------------------ Adding Physics Library
 	//Load the Physics library
-	//hGetProckDll = LoadLibraryA( libraryFile.c_str() );
-	hGetProckDll = LoadLibraryA( bulletLibraryFile.c_str() );
+	hGetProckDll = LoadLibraryA( libraryFile.c_str() );
 	if( !hGetProckDll )
 	{
 		std::cout << "Fail to load Physics Library File!" << std::endl;
@@ -215,6 +217,30 @@ int main( void )
 	::g_pThePhysicsFactory = CreateFactory();
 	::g_pThePhysicsWorld = ::g_pThePhysicsFactory->CreateWorld();	
 	//------------------------------------------------------------------------------ End of Physics Library stuff
+
+	//------------------------------------------------------------------------------ Adding Bullet Physics Library
+	//Load the Physics library
+	hGetProckDll = LoadLibraryA( bulletLibraryFile.c_str() );
+	if( !hGetProckDll )
+	{
+		std::cout << "Fail to load Physics Library File!" << std::endl;
+		system( "pause" );
+		return 1;
+	}
+
+	// Creating the Physics Factory from the Library
+	//std::string createFactoryName = "CreateFactory";
+
+	CreateFactory = ( f_CreateFactory )GetProcAddress( hGetProckDll, createFactoryName.c_str() );
+	if( !CreateFactory )
+	{
+		std::cout << "Where's the CreateFactory?" << std::endl;
+		system( "pause" );
+		return 1;
+	}
+	::g_pBulletPhysicsFactory = CreateFactory();
+	::g_pBulletPhysicsWorld = ::g_pBulletPhysicsFactory->CreateWorld();
+	//------------------------------------------------------------------------------ End of Bullet Physics Library stuff
 
 	GLFWwindow* window;
 	GLint mvp_location; //vpos_location, vcol_location;
@@ -690,6 +716,7 @@ void loadObjectsFile( std::string fileName )
 
 		// Create a new RigidBody
 		nPhysics::iRigidBody* newBody = NULL;
+		nPhysics::iRigidBody* newBulletBody = NULL;
 
 		// Create a RigidBody Description
 		nPhysics::sRigidBodyDesc theDesc;			
@@ -718,6 +745,7 @@ void loadObjectsFile( std::string fileName )
 			float radius = tempMesh.maxExtent / 2 * pTempGO->scale;
 			
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
+			newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, ::g_pThePhysicsFactory->CreateSphere( radius ) );
 		}
 		else
 		{
@@ -736,14 +764,15 @@ void loadObjectsFile( std::string fileName )
 
 			float planeConst = glm::dot( theDesc.Position, planeNormal );
 
-			planeConst = glm::normalize( planeConst );
-
 			newBody = ::g_pThePhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
+			newBulletBody = ::g_pBulletPhysicsFactory->CreateRigidBody( theDesc, g_pThePhysicsFactory->CreatePlane( planeNormal, planeConst ) );
 		}
 
 		::g_pThePhysicsWorld->AddRigidBody( newBody );
+		::g_pBulletPhysicsWorld->AddRigidBody( newBulletBody );
 			
 		pTempGO->rigidBody = newBody;
+		pTempGO->btRigidBody = newBulletBody;
 
 		::g_vecGameObjects.push_back( pTempGO );
 	}
