@@ -42,4 +42,6 @@ const std::string THEBALLNAME = "ball";			// Now that we have a lookup
 
 extern cMouseCamera* g_pTheMouseCamera;		// (theMain.cpp)
 
+extern bool g_bUseBulletPhysics;
+
 #endif

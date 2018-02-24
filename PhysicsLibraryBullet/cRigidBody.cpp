@@ -89,13 +89,19 @@ namespace nPhysics
 
 	void cRigidBody::GetPosition(glm::vec3& positionOut)
 	{
-		btTransform trans;
-		this->myBulletBody->getMotionState()->getWorldTransform( trans );	
+		//btTransform trans;
+		//this->myBulletBody->getMotionState()->getWorldTransform( trans );
+		//positionOut = glm::vec3( trans.getOrigin().getX(),
+		//	trans.getOrigin().getY(),
+		//	trans.getOrigin().getZ() );
 
-		positionOut = glm::vec3( trans.getOrigin().getX(),
-								 trans.getOrigin().getY(),
-								 trans.getOrigin().getZ() );
+		btVector3 position = this->myBulletBody->getCenterOfMassPosition();
+		positionOut = glm::vec3( position.getX(),
+								 position.getY(),
+								 position.getZ() );
+		
 
+	
 	}
 
 	void cRigidBody::GetVelocity( glm::vec3& velocityOut )
@@ -106,8 +112,9 @@ namespace nPhysics
 
 	void cRigidBody::SetVelocity( glm::vec3 velocityIn )
 	{
+		this->myBulletBody->activate( true );
 		btVector3 btVelocity = btVector3( velocityIn.x, velocityIn.y, velocityIn.z );
-		this->myBulletBody->setLinearVelocity( btVelocity );
+		this->myBulletBody->setLinearVelocity( btVelocity );		
 
 		return;
 	}
@@ -159,6 +166,7 @@ namespace nPhysics
 		btTransform trans;
 		this->myBulletBody->getMotionState()->getWorldTransform( trans );
 		trans.setOrigin( newPosition );
+
 	}
 
 	void cRigidBody::SetRotation( glm::vec3 rotationIn )
@@ -169,6 +177,7 @@ namespace nPhysics
 
 	void cRigidBody::ApplyForce( glm::vec3 force )
 	{
+		this->myBulletBody->activate( true );
 		btVector3 btForce = btVector3( force.x, force.y, force.z );
 		this->myBulletBody->applyCentralForce( btForce );
 	}
@@ -181,6 +190,7 @@ namespace nPhysics
 
 	void cRigidBody::ApplyImpulse( glm::vec3 impulse )
 	{		
+		this->myBulletBody->activate( true );
 		btVector3 btImpulse = btVector3( impulse.x, impulse.y, impulse.z );
 		btImpulse *= this->mMass * 10;
 		this->myBulletBody->applyCentralImpulse( btImpulse );
@@ -188,10 +198,9 @@ namespace nPhysics
 
 	void cRigidBody::ApplyImpulseAtPoint( glm::vec3 impulse, glm::vec3 relativePoint )
 	{	
+		this->myBulletBody->activate( true );
 		btVector3 btImpulse = btVector3( impulse.x, impulse.y, impulse.z );
 		btVector3 btPoint = btVector3( relativePoint.x, relativePoint.y, relativePoint.z );
 		this->myBulletBody->applyImpulse( btImpulse, btPoint );
-
 	}
-
 }

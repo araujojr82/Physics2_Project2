@@ -63,7 +63,7 @@ nPhysics::iPhysicsFactory* g_pBulletPhysicsFactory;
 std::string libraryFile = "PhysicsLibrary.dll";
 std::string bulletLibraryFile = "PhysicsLibraryBullet.dll";
 
-bool useBulletPhysics = true;
+bool g_bUseBulletPhysics = true;
 // END OF STUFF FOR PHYSICS LIBRARY
 
 
@@ -152,15 +152,22 @@ void DrawRenderStuff( glm::mat4 view, glm::mat4 projection )
 	for( int index = 0; index != ::g_vecGameObjects.size(); index++ )
 	{
 		cGameObject* pTheGO = ::g_vecGameObjects[index];
-		if( pTheGO->meshName == "ball" )
+		if( pTheGO->meshName == "ball" )	// HACK
 		{
 			// Draw radius for the spheres...
 			glm::vec3 color = glm::vec3( 1.0f, 1.0f, 0.0f );
+		
 			
-			glm::vec3 center;
-			pTheGO->rigidBody->GetPosition( center );
+			nPhysics::iRigidBody* tempBody;
+			if( g_bUseBulletPhysics )
+				tempBody = pTheGO->btRigidBody;
+			else
+				tempBody = pTheGO->rigidBody;
 
-			nPhysics::iShape* theShape = pTheGO->rigidBody->GetShape();
+			glm::vec3 center;
+			tempBody->GetPosition( center );
+
+			nPhysics::iShape* theShape = tempBody->GetShape();
 			
 			float radius;
 			theShape->GetSphereRadius( radius );
@@ -176,7 +183,7 @@ void DrawRenderStuff( glm::mat4 view, glm::mat4 projection )
 
 			// Draw velocity vector for the spheres...
 			glm::vec3 velocityEnd;
-			pTheGO->rigidBody->GetVelocity( velocityEnd );
+			tempBody->GetVelocity( velocityEnd );
 
 			velocityEnd += center;
 			color = glm::vec3( 1.0f, 0.0f, 0.0f );
@@ -267,7 +274,6 @@ int main( void )
 			NULL, 
 			NULL );
 	#endif
-
 
 	if( !window )
 	{
@@ -391,6 +397,7 @@ int main( void )
 
 	glEnable( GL_DEPTH );
 
+	// Select the first sphere
 	if( ::g_vecGameObjects.size() > 0 )
 	{
 		for( int i = 0; i != ::g_vecGameObjects.size(); i++ )
@@ -413,6 +420,7 @@ int main( void )
 	// Main game or application loop
 	while( !glfwWindowShouldClose( window ) )
 	{
+
 		float ratio;
 		int width, height;
 		glm::mat4x4 matProjection;			// was "p"
@@ -534,58 +542,11 @@ int main( void )
 		// Update camera from input
 		ProcessCameraInput( window, deltaTime );
 		
-		//// UpdateCamera
-		//{
-		//	if( g_selectedSphere != -1 )
-		//	{
-		//		glm::vec3 target;
-		//		::g_vecGameObjects[g_selectedSphere]->rigidBody->GetPosition( target );				
-		//		
-		//		// Calculate camera new position
-
-		//		
-		//		// Calculate camera Pitch
-		//		glm::vec3 pitchRef; 
-		//		pitchRef.x = target.x;
-		//		pitchRef.y = target.y;
-		//		pitchRef.z = ::g_pTheMouseCamera->Position.z;
-
-		//		glm::vec3 da = glm::normalize( pitchRef - ::g_pTheMouseCamera->Position );
-		//		glm::vec3 db = glm::normalize( target - ::g_pTheMouseCamera->Position );
-		//		float cos =  glm::acos( glm::dot( da, db ) );
-		//		cos *= -1;
-		//		::g_pTheMouseCamera->Pitch = glm::degrees( cos );
-
-		//		// Calculate camera Yaw
-		//		glm::vec3 yawRef;
-		//		yawRef.x = prevPosition.x;
-		//		yawRef.y = prevPosition.y;
-		//		yawRef.z = ::g_pTheMouseCamera->Position.z;
-
-		//		glm::vec3 yawRef2;
-		//		yawRef2.x = target.x;
-		//		yawRef2.y = target.y;
-		//		yawRef2.z = ::g_pTheMouseCamera->Position.z;
-
-		//		if( yawRef != yawRef2 )
-		//		{
-		//			da = glm::normalize( yawRef - ::g_pTheMouseCamera->Position );
-		//			db = glm::normalize( yawRef2 - ::g_pTheMouseCamera->Position );
-		//			cos = glm::acos( glm::dot( da, db ) );
-		//			//cos *= -1;
-
-		//			::g_pTheMouseCamera->Yaw = ( glm::degrees( cos ) - 135.0f );
-		//		}
-
-		//		::g_pTheMouseCamera->updateCameraVectors();
-
-		//		
-		//		prevPosition = target;
-		//	}
-		//}
-
 		// Physics Calculation
-		::g_pThePhysicsWorld->TimeStep( ( float )deltaTime );
+		if( g_bUseBulletPhysics )		
+			::g_pBulletPhysicsWorld->TimeStep( ( float )deltaTime );
+		else
+			::g_pThePhysicsWorld->TimeStep( ( float )deltaTime );
 		
 		lastTimeStep = curTime;
 
@@ -872,7 +833,18 @@ void DrawObject( cGameObject* pTheGO )
 
 	// There IS something to draw
 	glm::vec3 position;
-	pTheGO->rigidBody->GetPosition( position );
+	glm::quat qOrientation;
+	
+	if( g_bUseBulletPhysics )
+	{
+		pTheGO->btRigidBody->GetPosition( position );
+		pTheGO->btRigidBody->GetRotation( qOrientation );
+	}		
+	else
+	{
+		pTheGO->rigidBody->GetPosition( position );
+		pTheGO->rigidBody->GetRotation( qOrientation );
+	}
 
 	// 'model' or 'world' matrix
 	glm::mat4x4 mModel = glm::mat4x4( 1.0f );	//		mat4x4_identity(m);
@@ -881,18 +853,11 @@ void DrawObject( cGameObject* pTheGO )
 	trans = glm::translate( trans, position );
 	mModel = mModel * trans;
 
-	glm::quat qOrientation;
-	pTheGO->rigidBody->GetRotation( qOrientation );
-
 	// Now with quaternion rotation
 	// Like many things in GML, the conversion is done in the constructor
 	glm::mat4 postRotQuat = glm::mat4( qOrientation ); //pTheGO->qOrientation );
 	mModel = mModel * postRotQuat;
 
-	// assume that scale to unit bounding box
-	// ************* BEWARE *****************
-	//			float finalScale = VAODrawInfo.scaleForUnitBBox * ::g_vecGameObjects[index]->scale;
-	// We have taken out the scale adjustment so the scale is AS IT IS FROM THE MODEL
 	float finalScale = pTheGO->scale;
 
 	glm::mat4 matScale = glm::mat4x4( 1.0f );
@@ -964,7 +929,7 @@ void DrawObject( cGameObject* pTheGO )
 		glEnable( GL_CULL_FACE );
 	}
 
-	glCullFace( GL_BACK );	
+	glCullFace( GL_BACK );
 
 	glBindVertexArray( VAODrawInfo.VAO_ID );
 
@@ -1039,4 +1004,83 @@ void ProcessCameraInput( GLFWwindow *window, double deltaTime )
 		::g_pTheMouseCamera->ProcessKeyboard( UP, ( float )deltaTime );
 	if( glfwGetKey( window, GLFW_KEY_E ) == GLFW_PRESS )
 		::g_pTheMouseCamera->ProcessKeyboard( DOWN, ( float )deltaTime );
+}
+
+void switchPhysicsEngine()
+{	
+	nPhysics::iRigidBody* targetBody;
+	nPhysics::iRigidBody* sourceBody;
+
+	for( int index = 0; index != ::g_vecGameObjects.size(); index++ )
+	{
+		cGameObject* pTheGO = ::g_vecGameObjects[index];
+		if( pTheGO->rigidBody == nullptr )
+			continue;
+
+		if( g_bUseBulletPhysics )
+		{
+			targetBody = pTheGO->btRigidBody;
+			sourceBody = pTheGO->rigidBody;
+		}
+		else
+		{
+			targetBody = pTheGO->rigidBody;
+			sourceBody = pTheGO->btRigidBody;
+		}
+
+		glm::vec3 pos;
+		glm::vec3 vel;
+
+		// Grab data from the 1st engine
+		sourceBody->GetVelocity( vel );
+		sourceBody->GetPosition( pos );
+		
+		// Set it to the engine to be used
+		targetBody->SetVelocity( vel );
+		targetBody->SetPosition( pos );
+
+		glm::vec3 finalpos;
+		glm::vec3 finalvel;
+
+		targetBody->GetVelocity( finalvel );
+		targetBody->GetVelocity( finalpos );
+
+		if( g_bUseBulletPhysics )
+		{
+			std::cout << "Origin Crappy, Pos: "
+				<< pos.x << ", "
+				<< pos.y << ", "
+				<< pos.z << " / Vel: "
+				<< vel.x << ", "
+				<< vel.y << ", "
+				<< vel.z
+				<< " | Target Bullet "
+				<< finalpos.x << ", "
+				<< finalpos.y << ", "
+				<< finalpos.z << " / Vel: "
+				<< finalvel.x << ", "
+				<< finalvel.y << ", "
+				<< finalvel.z << std::endl;
+		}
+		else
+		{
+			std::cout << "Origin Bullet, Pos: "
+				<< pos.x << ", "
+				<< pos.y << ", "
+				<< pos.z << " / Vel: "
+				<< vel.x << ", "
+				<< vel.y << ", "
+				<< vel.z
+				<< " | Target Crappy "
+				<< finalpos.x << ", "
+				<< finalpos.y << ", "
+				<< finalpos.z << " / Vel: "
+				<< finalvel.x << ", "
+				<< finalvel.y << ", "
+				<< finalvel.z << std::endl;
+		}
+
+	}
+	
+	return;
 }

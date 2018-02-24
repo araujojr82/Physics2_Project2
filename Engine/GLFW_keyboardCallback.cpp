@@ -9,6 +9,8 @@ bool isAltKeyDown( int mods, bool bByItself = true );
 
 float forceToApply = 0.2f;
 
+extern void switchPhysicsEngine();
+
 bool findNextObject()
 {
 	bool found = false;
@@ -88,6 +90,12 @@ void setSpheresColor()
 	if( key == GLFW_KEY_ENTER && action == GLFW_PRESS )
 	{
 		::bIsWireframe = !::bIsWireframe;
+	}
+
+	if( key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS )
+	{
+		::g_bUseBulletPhysics = !::g_bUseBulletPhysics;
+		switchPhysicsEngine();
 	}
 	
 	const float CAMERASPEED = 0.1f;
@@ -216,8 +224,10 @@ void setSpheresColor()
 			angle = glm::normalize( angle );
 			angle *= ( 0.1f );
 
-			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
-			//::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( glm::vec3( 0.0f, -forceToApply, 0.0f ) );
+			if( g_bUseBulletPhysics )
+				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
+			else
+				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
 		}
 		break;
 
@@ -228,11 +238,13 @@ void setSpheresColor()
 			::g_vecGameObjects[g_selectedSphere]->rigidBody->GetPosition( target );
 			glm::vec3 angle = target - ::g_pTheMouseCamera->Position;
 			angle = glm::normalize( angle );
-			angle *= ( 0.1f );
+			angle *= ( -0.1f );
+			//angle *= ( -1.0f );
 
-			angle *= ( -1.0f );
-
-			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
+			if( g_bUseBulletPhysics )
+				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
+			else
+				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
 		}
 		break;
 
@@ -253,7 +265,10 @@ void setSpheresColor()
 			angle = rotateAngle;
 			angle *= ( 0.1f );
 
-			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
+			if( g_bUseBulletPhysics )
+				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
+			else
+				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );
 		}		
 		break;
 
@@ -274,7 +289,10 @@ void setSpheresColor()
 			angle = rotateAngle;
 			angle *= ( 0.1f );
 
-			::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );			
+			if( g_bUseBulletPhysics )
+				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
+			else
+				::g_vecGameObjects[::g_selectedSphere]->rigidBody->ApplyImpulse( angle );			
 		}
 		break;
 

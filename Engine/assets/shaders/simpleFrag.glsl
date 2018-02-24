@@ -57,8 +57,6 @@ vec3 calcLightColour( in vec3 vecNormal,
 					  in vec3 matDiffuse, 
                       in vec4 matSpecular );/*****************************************************/
 
-
-
 void main()
 {	
 	// Set to black...
