@@ -9,11 +9,11 @@
 namespace nPhysics
 {
 	class cPhysicsWorld;
-	class cRigidBody : public iRigidBody
+	class cBulletRigidBody : public iRigidBody
 	{
 	public:
-		cRigidBody(const sRigidBodyDesc& desc, iShape* shape);
-		virtual ~cRigidBody();
+		cBulletRigidBody(const sRigidBodyDesc& desc, iShape* shape);
+		virtual ~cBulletRigidBody();
 
 		virtual iShape* GetShape();
 
@@ -34,6 +34,8 @@ namespace nPhysics
 
 		virtual void ApplyImpulse( glm::vec3 impulse );
 		virtual void ApplyImpulseAtPoint( glm::vec3 impulse, glm::vec3 relativePoint );
+
+		btRigidBody* GetBulletBody();
 
 	private:
 		friend class cPhysicsWorld;

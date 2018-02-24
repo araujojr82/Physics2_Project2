@@ -1,5 +1,4 @@
 #pragma once
-//#include <Physics\Interfaces\iPhysicsFactory.h>
 #include <iPhysicsFactory.h>
 
 #define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
@@ -8,10 +7,10 @@ EXTERN_DLL_EXPORT nPhysics::iPhysicsFactory* CreateFactory();
 
 namespace nPhysics
 {
-	class cPhysicsFactory : public iPhysicsFactory
+	class cPhysicsBulletFactory : public iPhysicsFactory
 	{
 	public:
-		virtual ~cPhysicsFactory();
+		virtual ~cPhysicsBulletFactory();
 
 		virtual iPhysicsWorld* CreateWorld();
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <iPhysicsWorld.h>
 #include <vector>
-#include "cRigidBody.h"
+#include "cBulletRigidBody.h"
 #include "shapes.h"
 
 #include <btBulletDynamicsCommon.h>
@@ -11,10 +11,10 @@
 
 namespace nPhysics
 {
-	class cPhysicsWorld : public iPhysicsWorld
+	class cPhysicsBulletWorld : public iPhysicsWorld
 	{
 	public:
-		virtual ~cPhysicsWorld();
+		virtual ~cPhysicsBulletWorld();
 
 		virtual void TimeStep(float deltaTime);
 
