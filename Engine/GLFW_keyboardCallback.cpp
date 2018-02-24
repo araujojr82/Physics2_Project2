@@ -221,6 +221,7 @@ void setSpheresColor()
 			glm::vec3 target;
 			::g_vecGameObjects[g_selectedSphere]->rigidBody->GetPosition( target );				
 			glm::vec3 angle = target - ::g_pTheMouseCamera->Position;
+			angle.z = 0.0f;
 			angle = glm::normalize( angle );
 			angle *= ( 0.1f );
 
@@ -237,9 +238,9 @@ void setSpheresColor()
 			glm::vec3 target;
 			::g_vecGameObjects[g_selectedSphere]->rigidBody->GetPosition( target );
 			glm::vec3 angle = target - ::g_pTheMouseCamera->Position;
+			angle.z = 0.0f;
 			angle = glm::normalize( angle );
 			angle *= ( -0.1f );
-			//angle *= ( -1.0f );
 
 			if( g_bUseBulletPhysics )
 				::g_vecGameObjects[::g_selectedSphere]->btRigidBody->ApplyImpulse( angle );
@@ -254,6 +255,7 @@ void setSpheresColor()
 			glm::vec3 target;
 			::g_vecGameObjects[g_selectedSphere]->rigidBody->GetPosition( target );
 			glm::vec3 angle = target - ::g_pTheMouseCamera->Position;
+			angle.z = 0.0f;
 			angle = glm::normalize( angle );
 
 			float theta = glm::radians( 90.0f );
@@ -278,6 +280,7 @@ void setSpheresColor()
 			glm::vec3 target;
 			::g_vecGameObjects[g_selectedSphere]->rigidBody->GetPosition( target );
 			glm::vec3 angle = target - ::g_pTheMouseCamera->Position;
+			angle.z = 0.0f;
 			angle = glm::normalize( angle );
 
 			float theta = glm::radians( -90.0f );
