@@ -166,6 +166,7 @@ namespace nPhysics
 		btTransform trans;
 		this->myBulletBody->getMotionState()->getWorldTransform( trans );
 		trans.setOrigin( newPosition );
+		this->myBulletBody->setWorldTransform( trans );
 
 	}
 

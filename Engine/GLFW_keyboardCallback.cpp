@@ -94,8 +94,8 @@ void setSpheresColor()
 
 	if( key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS )
 	{
-		::g_bUseBulletPhysics = !::g_bUseBulletPhysics;
 		switchPhysicsEngine();
+		::g_bUseBulletPhysics = !::g_bUseBulletPhysics;
 	}
 	
 	const float CAMERASPEED = 0.1f;

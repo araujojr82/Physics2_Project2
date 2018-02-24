@@ -408,7 +408,10 @@ int main( void )
 				::g_vecGameObjects[i]->textureBlend[0] = 0.0f;
 				::g_vecGameObjects[i]->textureBlend[1] = 1.0f;
 
-				::g_vecGameObjects[i]->rigidBody->GetPosition( ::prevPosition );
+				if( g_bUseBulletPhysics )
+					::g_vecGameObjects[i]->btRigidBody->GetPosition( ::prevPosition );
+				else
+					::g_vecGameObjects[i]->rigidBody->GetPosition( ::prevPosition );
 				break;
 			}
 		}
@@ -1019,13 +1022,13 @@ void switchPhysicsEngine()
 
 		if( g_bUseBulletPhysics )
 		{
-			targetBody = pTheGO->btRigidBody;
-			sourceBody = pTheGO->rigidBody;
+			targetBody = pTheGO->rigidBody;
+			sourceBody = pTheGO->btRigidBody;
 		}
 		else
 		{
-			targetBody = pTheGO->rigidBody;
-			sourceBody = pTheGO->btRigidBody;
+			targetBody = pTheGO->btRigidBody;
+			sourceBody = pTheGO->rigidBody;			
 		}
 
 		glm::vec3 pos;
@@ -1043,43 +1046,7 @@ void switchPhysicsEngine()
 		glm::vec3 finalvel;
 
 		targetBody->GetVelocity( finalvel );
-		targetBody->GetVelocity( finalpos );
-
-		if( g_bUseBulletPhysics )
-		{
-			std::cout << "Origin Crappy, Pos: "
-				<< pos.x << ", "
-				<< pos.y << ", "
-				<< pos.z << " / Vel: "
-				<< vel.x << ", "
-				<< vel.y << ", "
-				<< vel.z
-				<< " | Target Bullet "
-				<< finalpos.x << ", "
-				<< finalpos.y << ", "
-				<< finalpos.z << " / Vel: "
-				<< finalvel.x << ", "
-				<< finalvel.y << ", "
-				<< finalvel.z << std::endl;
-		}
-		else
-		{
-			std::cout << "Origin Bullet, Pos: "
-				<< pos.x << ", "
-				<< pos.y << ", "
-				<< pos.z << " / Vel: "
-				<< vel.x << ", "
-				<< vel.y << ", "
-				<< vel.z
-				<< " | Target Crappy "
-				<< finalpos.x << ", "
-				<< finalpos.y << ", "
-				<< finalpos.z << " / Vel: "
-				<< finalvel.x << ", "
-				<< finalvel.y << ", "
-				<< finalvel.z << std::endl;
-		}
-
+		targetBody->GetPosition( finalpos );
 	}
 	
 	return;
