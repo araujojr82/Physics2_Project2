@@ -23,17 +23,24 @@ namespace nPhysics
 			shape->GetPlaneConst( pConst );
 			pConst = glm::normalize( pConst );
 			glm::vec3 planeNormal;
-			shape->GetPlaneNormal( planeNormal );					
-			btVector3 pNormal = btVector3( planeNormal.x * -1, planeNormal.y * -1, planeNormal.z * -1 );			
+			shape->GetPlaneNormal( planeNormal );
+
 			btVector3 position = btVector3( desc.Position.x, desc.Position.y, desc.Position.z );
+
+			// Had to invert the normals because I'm getting them from the mesh
+			btVector3 pNormal = btVector3( planeNormal.x * -1, planeNormal.y * -1, planeNormal.z * -1 );						
 			
-			//btCollisionShape* theShape = new btStaticPlaneShape( pNormal, pConst );
+			// Using plane Constant as 0 so the plane will be at the same position
 			btCollisionShape* theShape = new btStaticPlaneShape( pNormal, 0 );
+			
+
 			btDefaultMotionState* motionState = new btDefaultMotionState( btTransform( btQuaternion( 0, 0, 0, 1 ), position ) );
 			btRigidBody::btRigidBodyConstructionInfo
 				rigidBodyCI( 0, motionState, theShape, btVector3( 0, 0, 0 ) );
 	
 			this->myBulletBody = new btRigidBody( rigidBodyCI );
+
+			this->myBulletBody->setRestitution( 0.70 );
 
 		}			
 		else if( shape->GetShapeType() == nPhysics::SHAPE_TYPE_SPHERE )
@@ -55,6 +62,8 @@ namespace nPhysics
 				rigidBodyCI( mass, motionState, theShape, fallInertia );
 			
 			this->myBulletBody = new btRigidBody( rigidBodyCI );
+
+			this->myBulletBody->setRestitution( 0.8 );
 		}				
 
 	}
