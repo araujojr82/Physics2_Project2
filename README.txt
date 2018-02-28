@@ -1,15 +1,19 @@
 Physics 2 Project 2
 
-Please compile it in 64 bits
+Please compile all projects in 64 bits
 
 Author: Euclides Araujo
 
 User input keys:
 W,A,S,D,Q,E: Controls the camera position; NOT THE BALL
+Mouse wheel: Controls the camera zoom
+Mouse: Controls the Pitch and Yaw of the camera
+
 UP, DOWN, LEFT and RIGHT arrows: Control the selected ball 
 TAB: Change the selected ball
 ENTER: Enter the debug mode
-
+BACKSPACE: Alternate between Bullet Physics and MyCrappy Physics
+ESC: Quit the application
 
 Configuration of the scene is done via the objects.txt file.
 Each line can create 1 object in the scene, the line structure is:

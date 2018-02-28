@@ -72,8 +72,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(SourcePath)include;</IncludePath>
-    <LibraryPath>$(SourcePath)lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(SourcePath)include;$(SolutionDir)PhysicsInterfaces</IncludePath>
+    <LibraryPath>$(SourcePath)lib\Debug;$(SolutionDir)Debug;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SolutionDir)PhysicsInterfaces;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -83,13 +84,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath);$(SourcePath)include;</IncludePath>
-    <LibraryPath>$(SourcePath)lib\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(SourcePath)include;$(SolutionDir)PhysicsInterfaces</IncludePath>
+    <LibraryPath>$(SourcePath)lib\Release;$(SolutionDir)Release;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SolutionDir)PhysicsInterfaces;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath);$(SourcePath)include;</IncludePath>
-    <LibraryPath>$(SourcePath)lib\Release64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(SourcePath)include;$(SolutionDir)PhysicsInterfaces</IncludePath>
+    <LibraryPath>$(SourcePath)lib\Release64;$(SolutionDir)x64\Release;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(SolutionDir)PhysicsInterfaces;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
